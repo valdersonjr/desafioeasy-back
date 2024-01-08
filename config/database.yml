@@ -1,0 +1,24 @@
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  user: hygor1
+  password: 481593
+  host: localhost
+  port: 5432
+
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: desafioeasy_back_development
+  
+test:
+  <<: *default
+  database: desafioeasy_back_test
+
+production:
+  <<: *default
+  database: desafioeasy_back_production
+  username: desafioeasy_back
+  password: <%= ENV["DESAFIOEASY_BACK_DATABASE_PASSWORD"] %>
