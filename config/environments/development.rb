@@ -9,6 +9,15 @@ Rails.application.configure do
   config.cache_classes = false
 
   # Do not eager load code on boot.
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3001 }
+
+  Rails.application.routes.default_url_options[:host] = "http://localhost:3000"
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'localhost',
+    port: 1025,
+  }
   config.eager_load = false
 
   # Show full error reports.

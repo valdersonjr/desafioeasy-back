@@ -2,7 +2,7 @@ module Api::V1
     class ProductsController < ApplicationController
       before_action :authorize_access_request!, except: [:show, :index]
       before_action :set_product, only: %i[ show update destroy ]
-
+      
       # GET /products
       def index
         @products = Product.all

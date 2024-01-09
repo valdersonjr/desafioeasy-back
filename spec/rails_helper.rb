@@ -1,4 +1,8 @@
 require 'spec_helper'
+require 'factory_bot_rails'
+
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
@@ -27,4 +31,5 @@ RSpec.configure do |config|
 
   config.filter_rails_from_backtrace!
 
+end
 end
