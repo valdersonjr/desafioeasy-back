@@ -1,10 +1,11 @@
 module Api::V1
     class UsersController < ApplicationController
+      before_action :authorize_access_request!
       before_action :set_user, only: %i[ show update destroy ]
 
       # GET /users
       def index
-        @users = User.all
+        @users = current_user.records.all
 
         render json: @users
       end
@@ -16,7 +17,7 @@ module Api::V1
 
       # POST /users
       def create
-        @user = User.new(user_params)
+        @user = current_user.records.build(user_params)
 
         if @user.save
           render json: @user, status: :created, location: @user
@@ -42,7 +43,7 @@ module Api::V1
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_user
-          @user = User.find(params[:id])
+          @user = current_user.records.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.
