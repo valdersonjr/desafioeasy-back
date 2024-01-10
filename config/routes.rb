@@ -17,5 +17,12 @@ Rails.application.routes.draw do
       resources :users
     end
   end
-  get "home" => "home#index"
+
+  namespace :admin, defaults: { format: :json } do
+    namespace :v1 do
+      get "home" => "home#index"
+      resources :users, only: [:index, :show, :create, :update, :destroy]
+      resources :products, only: [:index, :show, :create, :update, :destroy]
+    end
+  end
 end
