@@ -1,55 +1,58 @@
-module Api::V1
-    class LoadsController < ApplicationController
-      before_action :authorize_access_request!, except: [:show, :index]
-      before_action :set_load, only: %i[ show update destroy ]
-      before_action :authenticate_user!
+module Admin::V1
+  class LoadsController < ApiController
+    
+    before_action :load_load, only: [:show, :update, :destroy]
+    before_action :build_load, only: [:create, :update]
+    before_action :authenticate_user!
+    def index
+      @loading_service = Admin::ModelLoadingService.new(Load.all, searchable_params)
+      @loading_service.call
+    end
 
-      # GET /loads
-      def index
-        @loads = Load.all
+    def create
+      @load = Load.new
+      @load.attributes = load_params
+      save_load!
+    end
 
-        render json: @loads
-      end
+    def show; end
 
-      # GET /loads/1
-      def show
-        render json: @load
-      end
+    def update
+      @load.attributes = load_params
+      save_load!
+    end
 
-      # POST /loads
-      def create
-        @load = Load.new(load_params)
+    def destroy
+      @load.destroy!
+    rescue
+      render_error(fields: @load.errors.messages)
+    end
 
-        if @load.save
-          render json: @load, status: :created, location: @load
-        else
-          render json: @load.errors, status: :unprocessable_entity
-        end
-      end
+    private
 
-      # PATCH/PUT /loads/1
-      def update
-        if @load.update(load_params)
-          render json: @load
-        else
-          render json: @load.errors, status: :unprocessable_entity
-        end
-      end
+    def build_load
+      @load = params[:id] ? Load.find(params[:id]) : Load.new
+      @load.attributes = load_params
+    end
 
-      # DELETE /loads/1
-      def destroy
-        @load.destroy
-      end
+    def load_load
+      @load = Load.find(params[:id])
+    end
 
-      private
-        # Use callbacks to share common setup or constraints between actions.
-        def set_load
-          @load = Load.find(params[:id])
-        end
+    def searchable_params
+      params.permit({ search: :code }, { order: {} }, :page, :length)
+    end
 
-        # Only allow a list of trusted parameters through.
-        def load_params
-          params.require(:load).permit(:code, :delivery_date)
-        end
+    def load_params
+      return {} unless params.has_key?(:load)
+      params.require(:load).permit(:id, :code, :delivery_date)
+    end
+
+    def save_load!
+      @load.save!
+      render :show
+    rescue StandardError => e
+      render_error(fields: @load.errors.messages.merge(base: [e.message]))
     end
   end
+end
