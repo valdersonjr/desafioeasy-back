@@ -8,8 +8,4 @@ class Product < ApplicationRecord
     validates :ballast, presence: true
     validates :ballast, presence: true, numericality: { greater_than: 0 }
 
-
-    validates :image, presence: true
-    has_one_attached :image
-
 end

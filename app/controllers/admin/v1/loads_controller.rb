@@ -2,7 +2,7 @@ module Api::V1
     class LoadsController < ApplicationController
       before_action :authorize_access_request!, except: [:show, :index]
       before_action :set_load, only: %i[ show update destroy ]
-      
+      before_action :authenticate_user!
 
       # GET /loads
       def index

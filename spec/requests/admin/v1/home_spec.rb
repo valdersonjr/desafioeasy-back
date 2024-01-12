@@ -3,6 +3,10 @@ require "rails_helper"
 describe "Home", type: :request do
   let(:user_attributes) { attributes_for(:user, login: "example", name: "Hygor", email: "test@test.com", password: "123456") }
   let(:user) { create(:user, user_attributes) }
+  before do
+    allow_any_instance_of(Admin::V1::HomeController).to receive(:authenticate_user!).and_return(true)
+    allow_any_instance_of(Admin::V1::HomeController).to receive(:current_user).and_return(user)
+  end
 
   it "tests home" do
     get '/admin/v1/home', headers: auth_header(user)
