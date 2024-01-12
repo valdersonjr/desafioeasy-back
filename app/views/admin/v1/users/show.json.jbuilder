@@ -1,3 +1,3 @@
 json.user do
-    json.(@user, :id, :name, :login)
+    json.(@user, :id, :name, :login, :email)
   end

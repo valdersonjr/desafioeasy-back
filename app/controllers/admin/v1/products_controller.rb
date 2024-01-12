@@ -1,10 +1,10 @@
 module Admin::V1
   class ProductsController < ApiController
-    
-    before_action :load_product, only: [:show, :update, :destroy]
-    before_action :build_product, only: [:create, :update]
     before_action :authenticate_user!
+    before_action :load_product, only: [:show, :update, :destroy]
+    
     def index
+      permitted = params.permit({ search: :name }, { order: {} }, :page, :length)
       @loading_service = Admin::ModelLoadingService.new(Product.all, searchable_params)
       @loading_service.call
     end
@@ -29,11 +29,6 @@ module Admin::V1
     end
 
     private
-
-    def build_product
-      @product = params[:id] ? Product.find(params[:id]) : Product.new
-      @product.attributes = product_params
-    end
 
     def load_product
       @product = Product.find(params[:id])

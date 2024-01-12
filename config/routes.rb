@@ -14,7 +14,7 @@ Rails.application.routes.draw do
       get "home" => "home#index"
       resources :users, only: [:index, :show, :create, :update, :destroy]
       resources :products, only: [:index, :show, :create, :update, :destroy]
-      resources :loads
+      resources :loads, only: [:index, :show, :create, :update, :destroy]
     end
   end
 end
