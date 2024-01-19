@@ -18,7 +18,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
       
       it "returns 10 first Users" do
         get url, headers: auth_header(user)
-        expected_users = User.all.order(:id).limit(10).as_json(only: %i(id email login name))
+        expected_users = User.all.order(:id).limit(10).as_json(only: %i(id login name))
         expect(body_json['users']).to match_array(expected_users)
       end
 
@@ -44,7 +44,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
       it "returns only seached users limited by default pagination" do
         get url, headers: auth_header(user), params: search_params
         expected_users = search_name_users[0..9].map do |user|
-          user.as_json(only: %i(id email login name))
+          user.as_json(only: %i(id login name))
         end
         expect(body_json['users']).to contain_exactly *expected_users
       end
@@ -72,7 +72,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
       
       it "returns users limited by pagination" do
         get url, headers: auth_header(user), params: { page: 2, length: 3 }
-        expected_users = User.all.order(:id).offset(3).limit(3).as_json(only: %i(id name email login))
+        expected_users = User.all.order(:id).offset(3).limit(3).as_json(only: %i(id name login))
         expect(body_json['users']).to eq expected_users
       end
 
@@ -93,7 +93,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
         get url, headers: auth_header(user), params: order_params
         users_response = body_json['users']
         users_response.sort_by! { |user| user['name'] }
-        expected_users = users[0..9].as_json(only: %i(id email login name))
+        expected_users = users[0..9].as_json(only: %i(id login name))
         expect(users_response).to contain_exactly *expected_users
       end
  
@@ -123,7 +123,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
 
       it 'returns last added User' do
         post url, headers: auth_header(user), params: user_params
-        expected_user = User.last.as_json(only: %i(id email login name))
+        expected_user = User.last.as_json(only: %i(id login name))
         expect(body_json['user']).to eq expected_user
       end
 
@@ -166,7 +166,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
 
     it "returns requested User" do
       get url, headers: auth_header(user)
-      expected_user = user.as_json(only: %i(id email login name))
+      expected_user = user.as_json(only: %i(id login name))
       expect(body_json['user']).to eq expected_user
     end
 
@@ -193,7 +193,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
       it 'returns updated User' do
         patch url, headers: auth_header(user), params: user_params
         user.reload
-        expected_user = user.as_json(only: %i(email id login name))
+        expected_user = user.as_json(only: %i(id login name))
         expect(body_json['user']).to eq expected_user
       end
 

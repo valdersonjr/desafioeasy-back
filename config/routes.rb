@@ -8,7 +8,6 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
-  
  namespace :admin, defaults: { format: :json } do
     namespace :v1 do
       get "home" => "home#index"

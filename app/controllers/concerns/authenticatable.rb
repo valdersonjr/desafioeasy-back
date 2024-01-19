@@ -21,7 +21,6 @@ module Authenticatable
 
   def valid_token?(token)
     begin
-      # Decodifique o token usando a chave secreta (substitua 'your_secret_key' pela sua chave secreta real)
       decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key!, true, algorithm: 'HS256')
       Rails.logger.debug("Decoded Token: #{decoded_token}")
 

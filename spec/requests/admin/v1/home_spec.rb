@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe "Home", type: :request do
-  let(:user_attributes) { attributes_for(:user, login: "example", name: "Hygor", email: "test@test.com", password: "123456") }
+  let(:user_attributes) { attributes_for(:user, login: "example", name: "Hygor", password: "123456") }
   let(:user) { create(:user, user_attributes) }
   before do
     allow_any_instance_of(Admin::V1::HomeController).to receive(:authenticate_user!).and_return(true)

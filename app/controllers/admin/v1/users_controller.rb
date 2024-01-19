@@ -39,7 +39,7 @@ module Admin::V1
   
       def user_params
         return {} unless params.has_key?(:user)
-        params.require(:user).permit(:id, :login, :name, :email, :password, :password_confirmation)
+        params.require(:user).permit(:id, :login, :name, :password)
       end
   
       def save_user!
@@ -50,4 +50,3 @@ module Admin::V1
       end
     end
   end
-  

@@ -1,7 +1,26 @@
 class Users::SessionsController < Devise::SessionsController
   include RackSessionsFix
   respond_to :json
+
+  def create
+    user = User.find_by(login: params[:user][:login])
+
+    if user&.valid_password?(params[:user][:password])
+      # Autenticação bem-sucedida
+      sign_in(user)
+      render json: {
+        status: { code: 200, message: 'Logged in successfully.' },
+        data: { user: UserSerializer.new(user).as_json['data']['attributes'] }
+      }, status: :ok
+    else
+      # Falha na autenticação
+      Rails.logger.error("Authentication failed: Invalid login or password. User: #{params[:user][:login]}")
+      render json: { error: 'Invalid login or password' }, status: :unauthorized
+    end
+  end
+
   private
+
   def respond_with(current_user, _opts = {})
     render json: {
       status: { 
@@ -10,6 +29,7 @@ class Users::SessionsController < Devise::SessionsController
       }
     }, status: :ok
   end
+
   def respond_to_on_destroy
     if request.headers['Authorization'].present?
       jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.devise_jwt_secret_key!).first
