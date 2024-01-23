@@ -179,26 +179,26 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
   context "PATCH /users/:id" do
     let(:user) { create(:user) }
     let(:url) { "/admin/v1/users/#{user.id}" }
-
+  
     context "with valid params" do
       let(:new_name) { 'My new User' }
-      let(:user_params) { { user: { name: new_name } }.to_json }
-
+      let(:user_params) { { user: { name: new_name, id: user.id, login: user.login, password: 'new_password' } } }
+  
       it 'updates User' do
-        patch url, headers: auth_header(user), params: user_params
+        patch url, headers: auth_header(user), params: user_params, as: :json
         user.reload
         expect(user.name).to eq new_name
       end
-
+  
       it 'returns updated User' do
-        patch url, headers: auth_header(user), params: user_params
+        patch url, headers: auth_header(user), params: user_params, as: :json
         user.reload
         expected_user = user.as_json(only: %i(id login name))
         expect(body_json['user']).to eq expected_user
       end
-
+  
       it 'returns success status' do
-        patch url, headers: auth_header(user), params: user_params
+        patch url, headers: auth_header(user), params: user_params, as: :json
         expect(response).to have_http_status(:ok)
       end
     end
