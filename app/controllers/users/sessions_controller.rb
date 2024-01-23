@@ -6,14 +6,16 @@ class Users::SessionsController < Devise::SessionsController
     user = User.find_by(login: params[:user][:login])
 
     if user&.valid_password?(params[:user][:password])
-      # Autenticação bem-sucedida
+
       sign_in(user)
+      token = request.env['warden-jwt_auth.token']
+
       render json: {
         status: { code: 200, message: 'Logged in successfully.' },
-        data: { user: UserSerializer.new(user).as_json['data']['attributes'] }
+        data: { user: UserSerializer.new(user).as_json['data']['attributes'] },
+        authentication_token: token
       }, status: :ok
     else
-      # Falha na autenticação
       Rails.logger.error("Authentication failed: Invalid login or password. User: #{params[:user][:login]}")
       render json: { error: 'Invalid login or password' }, status: :unauthorized
     end
@@ -33,6 +35,7 @@ class Users::SessionsController < Devise::SessionsController
   def respond_to_on_destroy
     if request.headers['Authorization'].present?
       jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.devise_jwt_secret_key!).first
+      Rails.logger.debug("JWT Token in Authorization Header: #{jwt_payload}")
       current_user = User.find(jwt_payload['sub'])
     end
     

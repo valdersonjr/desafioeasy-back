@@ -10,7 +10,6 @@ module Authenticatable
   private
 
   def authenticate_user!
-    # Obtenha o token do cabeçalho da solicitação
     token = request.headers['Authorization'].to_s.split.last
 
     unless token.present? && valid_token?(token)
