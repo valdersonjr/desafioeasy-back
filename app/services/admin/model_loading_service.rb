@@ -12,7 +12,8 @@ module Admin
       def call
         set_pagination_values
         searched = search_records(@searchable_model)
-        @records = searched.order(@params[:order].to_h)
+        order_params = @params[:order].to_h.presence || { id: :asc }
+        @records = searched.order(order_params)
                            .paginate(@params[:page], @params[:length])
         set_pagination_attributes(searched.count)
       end

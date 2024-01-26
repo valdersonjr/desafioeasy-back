@@ -239,7 +239,8 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
 
   context "DELETE /users/:id" do
     let!(:user) { create(:user) }
-    let(:url) { "/admin/v1/users/#{user.id}" }
+    let!(:other_user) { create(:user) }
+    let(:url) { "/admin/v1/users/#{other_user.id}" }
 
     it 'removes User' do
       expect do  
@@ -254,7 +255,7 @@ RSpec.describe "Admin V1 Users as :admin", type: :request do
 
     it 'does not return any body content' do
       delete url, headers: auth_header(user)
-      expect(body_json).to_not be_present
+      expect(body_json).to be_blank
     end
   end
 end

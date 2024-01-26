@@ -22,6 +22,10 @@ module Admin::V1
       end
   
       def destroy
+        if @user.id == current_user.id
+          render_error({ message: "Você não pode excluir sua própria conta." })
+          return
+        end
         @user.destroy!
       rescue ActiveRecord::RecordNotDestroyed => e
         render_error(fields: @user.errors.messages.merge(base: [e.message]))
@@ -34,14 +38,14 @@ module Admin::V1
       end
   
       def searchable_params
-        params.permit({ search: :name }, { order: {} }, :page, :length)
+        cleaned_params = params.except(:format)
+        cleaned_params.permit({ search: :name }, { order: {} }, :page, :length)
       end
   
       def user_params
         return {} unless params.has_key?(:user)
         params.require(:user).permit(:id, :login, :name, :password)
       end
-  
       def save_user!
         @user.save!
         render :show

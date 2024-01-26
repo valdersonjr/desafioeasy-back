@@ -4,7 +4,6 @@ class Users::SessionsController < Devise::SessionsController
 
   def create
     user = User.find_by(login: params[:user][:login])
-
     if user&.valid_password?(params[:user][:password])
 
       sign_in(user)
