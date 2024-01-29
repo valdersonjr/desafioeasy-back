@@ -23,7 +23,8 @@ module DesafioeasyBack
     config.load_defaults 7.0
     config.autoload_paths += %W["#{config.root}/app/validators/"]
     config.autoload_paths << Rails.root.join('lib')
-    
+    config.time_zone = 'UTC'
+    config.active_record.default_timezone = :utc
     config.i18n.load_path += Dir[Rails.root.join('config/locales/**/*.{rb,yml}')]
     config.i18n.default_locale = :'pt-BR'
 
