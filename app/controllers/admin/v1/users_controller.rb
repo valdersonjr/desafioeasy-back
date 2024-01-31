@@ -30,6 +30,10 @@ module Admin::V1
       rescue ActiveRecord::RecordNotDestroyed => e
         render_error(fields: @user.errors.messages.merge(base: [e.message]))
       end
+
+      def current
+        render json: current_user
+      end
   
       private
   

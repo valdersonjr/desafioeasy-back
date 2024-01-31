@@ -11,6 +11,7 @@ Rails.application.routes.draw do
  namespace :admin, defaults: { format: :json } do
     namespace :v1 do
       get "home" => "home#index"
+      get 'users/current', to: 'users#current'
       resources :users, only: [:index, :show, :create, :update, :destroy]
       resources :products, only: [:index, :show, :create, :update, :destroy]
       resources :loads, only: [:index, :show, :create, :update, :destroy]
