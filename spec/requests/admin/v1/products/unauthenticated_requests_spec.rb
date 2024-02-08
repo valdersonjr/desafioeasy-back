@@ -1,3 +1,5 @@
+# Testes de produtos para usuários não autênticados.
+
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Products without authentication", type: :request do

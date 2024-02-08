@@ -1,16 +1,19 @@
+# Testes de cargas para usuários autênticados.
+
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Loads as :admin", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user) } # Cria um usuário para ser usado nos testes. A função `create(:user)` utiliza a gem FactoryBot para isso.
 
   before do
-    allow_any_instance_of(Admin::V1::LoadsController).to receive(:authenticate_user!).and_return(true)
+    allow_any_instance_of(Admin::V1::LoadsController).to receive(:authenticate_user!).and_return(true) # Antes de cada teste, simula a autenticação e define o usuário atual como o usuário criado acima.
     allow_any_instance_of(Admin::V1::LoadsController).to receive(:current_user).and_return(user)
   end
 
   context "GET /loads" do
-    let(:url) { "/admin/v1/loads" }
-    let!(:loads) { create_list(:load, 10) }
+    let(:url) { "/admin/v1/loads" }          # Define a URL para a requisição.
+    let!(:loads) { create_list(:load, 10) }  # Cria uma lista de 10 cargas (loads) para os testes.
+    
     
     context "without any params" do
       it "returns 10 Loads" do

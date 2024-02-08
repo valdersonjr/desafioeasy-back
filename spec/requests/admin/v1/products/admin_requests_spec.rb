@@ -1,23 +1,24 @@
+# Testes de produtos para usuários autênticados.
+
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Products as :admin", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user) } # Cria um usuário para ser usado nos testes. A função `create(:user)` utiliza a gem FactoryBot para isso.
 
   before do
-    allow_any_instance_of(Admin::V1::ProductsController).to receive(:authenticate_user!).and_return(true)
+    allow_any_instance_of(Admin::V1::ProductsController).to receive(:authenticate_user!).and_return(true) # Antes de cada teste, simula a autenticação e define o usuário atual como o usuário criado acima.
     allow_any_instance_of(Admin::V1::ProductsController).to receive(:current_user).and_return(user)
   end
 
   context "GET /products" do
-    let(:url) { "/admin/v1/products" }
-    let!(:products) { create_list(:product, 10) }
+    let(:url) { "/admin/v1/products" }            # Define a URL para a requisição.
+    let!(:products) { create_list(:product, 10) } # Cria uma lista de 10 produtos (products) para os testes.
     
     context "without any params" do
       it "returns 10 Products" do
         get url, headers: auth_header(user)
         expect(body_json['products'].count).to eq 10
       end
-      
       it "returns 10 first Products" do
         get url, headers: auth_header(user)
         expected_products = products[0..9].as_json(only: %i(id name ballast))

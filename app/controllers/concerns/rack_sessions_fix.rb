@@ -1,3 +1,5 @@
+# Parte em que o devise cria um hash de sessão falso.
+
 module RackSessionsFix
     extend ActiveSupport::Concern
     class FakeRackSession < Hash

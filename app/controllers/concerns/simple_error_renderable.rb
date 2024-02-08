@@ -1,3 +1,5 @@
+# Módulo para renderizar erros.
+
 module SimpleErrorRenderable
     extend ActiveSupport::Concern
   

@@ -1,14 +1,16 @@
+# Testes de usuários para usuários autênticados.
+
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Users as :admin", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user) }  # Cria um usuário para ser usado nos testes. A função `create(:user)` utiliza a gem FactoryBot para isso.
   before do
-    allow_any_instance_of(Admin::V1::UsersController).to receive(:authenticate_user!).and_return(true)
+    allow_any_instance_of(Admin::V1::UsersController).to receive(:authenticate_user!).and_return(true) # Antes de cada teste, simula a autenticação e define o usuário atual como o usuário criado acima.
     allow_any_instance_of(Admin::V1::UsersController).to receive(:current_user).and_return(user)
   end
   context "GET /users" do
-    let(:url) { "/admin/v1/users" }
-    let!(:users) { create_list(:user, 10) }
+    let(:url) { "/admin/v1/users" }         # Define a URL para a requisição.
+    let!(:users) { create_list(:user, 10) } # Cria uma lista de 10 usuários (users) para os testes.
     
     context "without any params" do
       it "returns 10 Users" do

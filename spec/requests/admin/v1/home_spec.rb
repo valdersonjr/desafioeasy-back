@@ -1,3 +1,5 @@
+# Testes para a rota home.
+
 require "rails_helper"
 
 describe "Home", type: :request do

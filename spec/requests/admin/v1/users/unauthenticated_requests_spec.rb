@@ -1,3 +1,5 @@
+# Testes de usuários para usuários não autênticados.
+
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Users without authentication", type: :request do
