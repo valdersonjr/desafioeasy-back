@@ -1,6 +1,8 @@
 # Classe Product (Produto).
 
 class Product < ApplicationRecord                                          # Define a classe Product como um modelo ActiveRecord, herança que permite interagir com a tabela 'products' no BD.
+    has_many :order_products
+    has_many :orders, through: :order_products
 
     include LikeSearchable                                                 # Inclui o módulo LikeSearchable, adicionando a este modelo a capacidade de realizar buscas por correspondência de padrões.
     include Paginatable                                                    # Inclui o módulo Paginatable, adicionando funcionalidade de paginação a este modelo.

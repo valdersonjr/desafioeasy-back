@@ -1,7 +1,8 @@
 # Classe Load (Carga).
 
 class Load < ApplicationRecord                                             # Define a classe Load como um modelo ActiveRecord, herança que permite interagir com a tabela 'loads' no BD.
-    
+    has_many :orders
+
     include LikeSearchable                                                 # Inclui o módulo LikeSearchable, adicionando a este modelo a capacidade de realizar buscas por correspondência de padrões.
     include Paginatable                                                    # Inclui o módulo Paginatable, adicionando funcionalidade de paginação a este modelo.
 
