@@ -2,30 +2,29 @@
 
 module Admin::V1
   class LoadsController < ApiController    
-    before_action :authenticate_user!                                                  # Filtro para garantir que cada ação no controlador exija que o usuário esteja autenticado.   
-    before_action :load_load, only: [:show, :update, :destroy]                         # Filtro que chama o método load_load antes das ações show, update e destroy, carregando o objeto Load correspondente ao id fornecido nos parâmetros das requisições. 
-
+    before_action :authenticate_user!                                                     
+    before_action :load_load, only: [:show, :update, :destroy]                         
 #   --AÇÕES DO CONTROLADOR--
-    def index                                                                          # Index lista todos os objetos load aplicando ordenação e paginação, que são feitas através do serviço ModelLoadingService.
+    def index                                                                          
       permitted = params.permit({ search: :code }, { order: {} }, :page, :length)
       @loading_service = Admin::ModelLoadingService.new(Load.all, searchable_params)
       @loading_service.call
     end
     
-    def create                                                                         # Create cria um novo objeto load com os parâmetros fornecidos, tenta salvar no BD e renderiza a ação show em caso de sucesso, se falhar, renderiza um erro.
+    def create                                                                         
       @load = Load.new
       @load.attributes = load_params
       save_load!
     end
 
-    def show; end                                                                      # Show exibe o objeto load que foi carregado pelo filtro before_action :load_load.
+    def show; end                                                                      
 
-    def update                                                                         # Update atualiza o objeto load carregado com os parâmetros fornecidos, tenta salvar as ações no banco de dados e renderiza a ação show em caso de sucesso, se falhar, renderiza um erro.
+    def update                                                                         
       @load.attributes = load_params
       save_load!
     end
 
-    def destroy                                                                        # Destroy tenta deletar o objeto load carregado do BD, em caso de falha, renderiza um erro.
+    def destroy                                                                        
       @load.destroy!
     rescue
       render_error(fields: @load.errors.messages)
@@ -33,20 +32,20 @@ module Admin::V1
 #   --MÉTODOS PRIVADOS-- (encapsulamentos que ajudam a proteger a lógica interna e aumentar a segurança do código)
     private 
 
-    def load_load                                                                      # Carrega o objeto load com base no id fornecido para a requisição.
+    def load_load                                                                      
       @load = Load.find(params[:id])
     end
 
-    def searchable_params                                                              # Permite certos parâmetros para ações de busca e ordenação, para filtrar os dados na ação index.
+    def searchable_params                                                              
       params.permit({ search: :code }, { order: {} }, :page, :length)
     end
 
-    def load_params                                                                    # Filtra os parâmetros permitidos para a criação ou atualização de um objeto load, evitando a atribuição em massa de parâmetros não permitidos.
+    def load_params                                                                    
       return {} unless params.has_key?(:load)
       params.require(:load).permit(:id, :code, :delivery_date)
     end
 
-    def save_load!                                                                     # Tenta salvar o objeto load no BD e renderiza a ação show em caso de sucesso. Em caso de erro, renderiza um erro com as mensagens de erro do objeto e qualquer exceção capturada.
+    def save_load!                                                                     
       @load.save!
       render :show
     rescue StandardError => e

@@ -1,15 +1,15 @@
 # Classe Product (Produto).
 
-class Product < ApplicationRecord                                          # Define a classe Product como um modelo ActiveRecord, herança que permite interagir com a tabela 'products' no BD.
+class Product < ApplicationRecord                                          
     has_many :order_products
     has_many :orders, through: :order_products
 
-    include LikeSearchable                                                 # Inclui o módulo LikeSearchable, adicionando a este modelo a capacidade de realizar buscas por correspondência de padrões.
-    include Paginatable                                                    # Inclui o módulo Paginatable, adicionando funcionalidade de paginação a este modelo.
+    include LikeSearchable                                                 
+    include Paginatable                                                    
 
-    validates :name, presence: true, uniqueness: { case_sensitive: false } # Valida a presença e a unicidade (ignorando diferenças de maiúsculas/minúsculas) do atributo name.
-                                                                           # Isso garante que cada produto tenha um nome e que não haja dois produtos com o mesmo nome,
-                                                                           # independentemente de capitalização.
-    validates :ballast, presence: true, numericality: { greater_than: 0 }  # Valida a presença do atributo :ballast, garantindo que cada produto tenha um valor especificado para este campo e
-                                                                           # adiciona uma restrição lógica ao modelo que faz com que ballast seja numérico e maior que zero.
+    validates :name, presence: true, uniqueness: { case_sensitive: false } 
+                                                                           
+                                                                           
+    validates :ballast, presence: true, numericality: { greater_than: 0 }  
+                                                                           
 end
