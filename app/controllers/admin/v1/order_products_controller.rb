@@ -47,7 +47,7 @@ module Admin::V1
   
       def save_order_product!
         @order_product.save!
-        render :show, status: :created
+        render :show, status: :ok
       rescue StandardError => e
         render_error(fields: @order_product.errors.messages.merge(base: [e.message]))
       end
