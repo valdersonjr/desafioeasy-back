@@ -33,7 +33,7 @@ module Admin::V1
       def set_order
         @order = Order.find(params[:order_id])
       rescue ActiveRecord::RecordNotFound
-        render_error(message: "Order not found", status: :not_found)
+        render_error(message: "Lista não encontrada", status: :not_found)
       end
   
       def load_order_product

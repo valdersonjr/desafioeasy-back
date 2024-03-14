@@ -15,6 +15,9 @@ Rails.application.routes.draw do
       resources :users, only: [:index, :show, :create, :update, :destroy]
       resources :products, only: [:index, :show, :create, :update, :destroy]
       resources :loads, only: [:index, :show, :create, :update, :destroy]
+      resources :orders, only: [:index, :show, :create, :update, :destroy] do
+        resources :order_products, only: [:index, :create, :show, :update, :destroy]
+      end
     end
   end
 end
