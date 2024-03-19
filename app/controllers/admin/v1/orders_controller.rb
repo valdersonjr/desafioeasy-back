@@ -4,9 +4,15 @@ module Admin::V1
     before_action :load_order, only: [:show, :update, :destroy]                        
 
     def index
-      permitted = params.permit({ search: :code }, { order: {} }, :page, :length)
-      @loading_service = Admin::ModelLoadingService.new(Order.all, searchable_params)
-      @loading_service.call
+      if params[:load_id]
+        load = Load.find(params[:load_id])
+        @orders = load.orders
+      else
+        permitted = params.permit({ search: :code }, { order: {} }, :page, :length)
+        @loading_service = Admin::ModelLoadingService.new(Order.all, searchable_params)
+        @loading_service.call
+      end
+      render json: @orders, status: :ok
     end
     
     def create

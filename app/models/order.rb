@@ -7,7 +7,7 @@ class Order < ApplicationRecord
     include Paginatable 
 
     validates :code, :bay, presence: true
-    validates :code, uniqueness: true
+    validates :code, presence: true
     validates :load_id, presence: true
     
 end

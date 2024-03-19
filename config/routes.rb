@@ -8,14 +8,16 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
- namespace :admin, defaults: { format: :json } do # Demais rotas para a aplicação, como usuários, produtos e cargas.
+  namespace :admin, defaults: { format: :json } do
     namespace :v1 do
       get "home" => "home#index"
       get 'users/current', to: 'users#current'
       resources :users, only: [:index, :show, :create, :update, :destroy]
       resources :products, only: [:index, :show, :create, :update, :destroy]
-      resources :loads, only: [:index, :show, :create, :update, :destroy]
-      resources :orders, only: [:index, :show, :create, :update, :destroy] do
+      resources :loads, only: [:index, :show, :create, :update, :destroy] do
+        resources :orders, only: [:index, :show, :create, :update, :destroy] 
+      end
+      resources :orders, only: [:show, :create, :update, :destroy] do
         resources :order_products, only: [:index, :create, :show, :update, :destroy]
       end
     end

@@ -8,10 +8,10 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
     allow_any_instance_of(Admin::V1::OrdersController).to receive(:authenticate_user!).and_return(true) 
     allow_any_instance_of(Admin::V1::OrdersController).to receive(:current_user).and_return(user)
   end
-
+  let(:load) { create(:load) } 
   context "GET /orders" do
-    let(:url) { "/admin/v1/orders" }            
-    let!(:orders) { create_list(:order, 10) } 
+    let(:url) { "/admin/v1/loads/#{load.id}/orders" }            
+    let!(:orders) { create_list(:order, 10, load: load) } 
 
     context "without any params" do
       it "returns 10 Orders" do
