@@ -4,15 +4,13 @@ module Admin::V1
     before_action :load_order, only: [:show, :update, :destroy]                        
 
     def index
-      if params[:load_id]
-        load = Load.find(params[:load_id])
-        @orders = load.orders
-      else
-        permitted = params.permit({ search: :code }, { order: {} }, :page, :length)
-        @loading_service = Admin::ModelLoadingService.new(Order.all, searchable_params)
-        @loading_service.call
-      end
-      render json: @orders, status: :ok
+      orders_query = if params[:load_id]
+      Load.find(params[:load_id]).orders
+        else
+      Order.all
+        end
+      @loading_service = Admin::ModelLoadingService.new(orders_query, searchable_params)
+      @loading_service.call
     end
     
     def create
@@ -44,7 +42,7 @@ module Admin::V1
     end
 
     def searchable_params
-      params.permit({ search: :code }, { order: {} }, :page, :length)
+      params.permit(:load_id, { search: :code }, { order: {} }, :page, :length, :format)
     end
 
     def order_params
