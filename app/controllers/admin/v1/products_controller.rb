@@ -7,7 +7,7 @@ module Admin::V1
 
 #   --AÇÕES DO CONTROLADOR--    
     def index                                                                          
-      permitted = params.permit({ search: :name }, { order: {} }, :page, :length)
+      permitted = params.permit({ search: :name }, { order: {} }, :page, :length, :format)
       @loading_service = Admin::ModelLoadingService.new(Product.all, searchable_params)
       @loading_service.call
     end
@@ -38,7 +38,7 @@ module Admin::V1
     end
 
     def searchable_params                                                              
-      params.permit({ search: :name }, { order: {} }, :page, :length)
+      params.permit({ search: :name }, { order: {} }, :page, :length, :format)
     end
 
     def product_params                                                                 
