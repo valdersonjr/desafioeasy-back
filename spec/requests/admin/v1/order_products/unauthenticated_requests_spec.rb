@@ -1,11 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe "Admin V1 OrderProducts without authentication", type: :request do
+
+    let!(:load) { create(:load) }
     let!(:order) { create(:order) }
     let!(:product) { create(:product) }
     let!(:order_product) { create(:order_product, order: order, product: product) }
+    
   context "GET /order_products" do
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products" }
 
     let!(:order_products) { create(:order_product) }
 
@@ -15,7 +18,7 @@ RSpec.describe "Admin V1 OrderProducts without authentication", type: :request d
   end
 
   context "POST /order_products" do
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products" }
     
     before(:each) { post url }
     
@@ -24,7 +27,7 @@ RSpec.describe "Admin V1 OrderProducts without authentication", type: :request d
 
   context "GET /order_products/:id" do
     let!(:order_products) { create(:order_product) }
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products/#{order_products.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products" }
 
     before(:each) { get url }
 
@@ -33,7 +36,7 @@ RSpec.describe "Admin V1 OrderProducts without authentication", type: :request d
 
   context "PATCH /order_products/:id" do
     let!(:order_products) { create_list(:order_product, 5) }
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products/#{order_product.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products/#{order_product.id}" }
 
     before(:each) { patch url }
     
@@ -42,7 +45,7 @@ RSpec.describe "Admin V1 OrderProducts without authentication", type: :request d
 
   context "DELETE /order_products/:id" do
     let!(:order_products) { create_list(:order_product, 5) }
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products/#{order_product.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products/#{order_product.id}" }
 
     before(:each) { delete url }
     

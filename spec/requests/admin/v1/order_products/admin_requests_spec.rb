@@ -6,13 +6,13 @@ RSpec.describe "Admin V1 OrderProducts as :admin", type: :request do
     allow_any_instance_of(Admin::V1::OrderProductsController).to receive(:authenticate_user!).and_return(true)
     allow_any_instance_of(Admin::V1::OrderProductsController).to receive(:current_user).and_return(user)
   end
-
+  let!(:load) { create(:load) }
   let!(:order) { create(:order) }
   let!(:product) { create(:product) }
   let!(:order_products) { create(:order_product) }
   
   describe "GET /order_products" do
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products" }
     let!(:order_products) { create_list(:order_product, 5, order: order) }
 
     it "lists all products for the specified order" do
@@ -26,7 +26,7 @@ RSpec.describe "Admin V1 OrderProducts as :admin", type: :request do
   end
 
   describe "POST /order_products" do
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products" }
     context "with valid params" do
       let(:order_product_params) do
         { order_product: attributes_for(:order_product, product_id: product.id, order_id: order.id) }.to_json
@@ -79,7 +79,7 @@ RSpec.describe "Admin V1 OrderProducts as :admin", type: :request do
 
   describe "PATCH /order_products/:id" do
     let!(:order_product) { create(:order_product, order: order, product: product) }
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products/#{order_product.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products/#{order_product.id}" }
 
     context "with valid params" do
       let(:new_quantity) { '3 caixas' }
@@ -132,7 +132,7 @@ RSpec.describe "Admin V1 OrderProducts as :admin", type: :request do
   end
   describe "DELETE /order_products/:id" do
     let!(:order_product) { create(:order_product, order: order, product: product) }
-    let(:url) { "/admin/v1/orders/#{order.id}/order_products/#{order_product.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products/#{order_product.id}" }
 
     it "removes the product from the order" do
       expect do

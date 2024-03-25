@@ -8,7 +8,9 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
     allow_any_instance_of(Admin::V1::OrdersController).to receive(:authenticate_user!).and_return(true) 
     allow_any_instance_of(Admin::V1::OrdersController).to receive(:current_user).and_return(user)
   end
-  let(:load) { create(:load) } 
+  let!(:load) { create(:load) }
+  let!(:order) { create(:order) }
+
   context "GET /orders" do
     let(:url) { "/admin/v1/loads/#{load.id}/orders" }            
     let!(:orders) { create_list(:order, 10, load: load) } 
@@ -20,7 +22,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
       end
       it "returns 10 first Orders" do
         get url, headers: auth_header(user)
-        expected_orders = orders[0..9].as_json(only: %i(id code bay load_id))
+        expected_orders = orders[0..9].as_json(only: %i(bay code id load_id))
         expect(body_json['orders']).to contain_exactly *expected_orders
       end
 
@@ -33,11 +35,10 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
         before { get url, headers: auth_header(user) }
       end
     end
-
     context "with search[code] param" do
       let!(:search_code_orders) do
         orders = [] 
-        15.times { |n| orders << create(:order, code: "Search #{n + 1}") }
+        15.times { |n| orders << create(:order, code: "Search #{n + 1}", load: load) }
         orders 
       end
 
@@ -110,7 +111,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
   end
 
   context "POST /orders" do
-    let(:url) { "/admin/v1/orders" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders" }
     let!(:load) { create(:load) }
       
     context "with valid params" do
@@ -167,13 +168,13 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
     let(:order) { create(:order) }
     let!(:product) { create(:product) }
     let!(:order_product) { create(:order_product, order: order, product: product) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
   
     it "returns requested Order with OrderProducts" do
       get url, headers: auth_header(user)
       
-      expected_order = order.as_json(only: %i[bay code created_at id load_id updated_at])
-      expected_order['order_products'] = [order_product.as_json(only: %i[id product_id order_id quantity box created_at updated_at])]
+      expected_order = order.as_json(only: %i[bay code created_at id load_id updated_at meta orders])
+      expected_order['order_products'] = [order_product.as_json(only: %i[id product_id order_id quantity box created_at updated_at meta orders])]
       
       expect(body_json).to eq expected_order
     end
@@ -186,7 +187,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
 
   context "PATCH /orders/:id" do
     let(:order) { create(:order) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
 
     context "with valid params" do
       let(:new_code) { 'My new Order' }
@@ -247,7 +248,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
 
   context "DELETE /orders/:id" do
     let!(:order) { create(:order) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
 
     it 'removes Order' do
       expect do  
@@ -276,7 +277,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
         create(:order_product, order: order, product: product, quantity: "2 caixas", box: true)
       end
 
-      get "/admin/v1/orders/#{order.id}", headers: { "ACCEPT" => "application/json" }
+      get "/admin/v1/loads/#{load.id}/orders/#{order.id}", headers: { "ACCEPT" => "application/json" }
     end
 
     it "returns order details with associated products" do

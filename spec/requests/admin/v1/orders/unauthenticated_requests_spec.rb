@@ -2,10 +2,15 @@
 require 'rails_helper'
 
 RSpec.describe "Admin V1 Orders without authentication", type: :request do
-  
+
+  let!(:load) { create(:load) }
+  let!(:order) { create(:order) }
+  let!(:order) { create(:order, load: load) }
+
   context "GET /orders" do
-    let(:url) { "/admin/v1/orders" }
-    let!(:orders) { create_list(:order, 5) }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders" }
+
+    let!(:orders) { create(:order) }
 
     before(:each) { get url }
     
@@ -13,7 +18,7 @@ RSpec.describe "Admin V1 Orders without authentication", type: :request do
   end
 
   context "POST /orders" do
-    let(:url) { "/admin/v1/orders" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders" }
     
     before(:each) { post url }
     
@@ -22,7 +27,7 @@ RSpec.describe "Admin V1 Orders without authentication", type: :request do
 
   context "GET /orders/:id" do
     let(:order) { create(:order) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
 
     before(:each) { get url }
 
@@ -31,7 +36,7 @@ RSpec.describe "Admin V1 Orders without authentication", type: :request do
 
   context "PATCH /orders/:id" do
     let(:order) { create(:order) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
 
     before(:each) { patch url }
     
@@ -40,7 +45,7 @@ RSpec.describe "Admin V1 Orders without authentication", type: :request do
 
   context "DELETE /orders/:id" do
     let!(:order) { create(:order) }
-    let(:url) { "/admin/v1/orders/#{order.id}" }
+    let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}" }
 
     before(:each) { delete url }
     

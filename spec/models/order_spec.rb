@@ -12,7 +12,7 @@ RSpec.describe Order, type: :model do
 
     it { is_expected.to validate_presence_of(:code) }
     it { is_expected.to validate_presence_of(:bay) }
-    it { is_expected.to validate_uniqueness_of(:code) }
+    it { is_expected.to validate_uniqueness_of(:code).case_insensitive}
     it { is_expected.to validate_presence_of(:load_id) }
 
 end
