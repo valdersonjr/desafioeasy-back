@@ -9,6 +9,7 @@ class Product < ApplicationRecord
 
     validates :name, presence: true, uniqueness: { case_sensitive: false } 
                                                                            
+    validates :product_type, presence: true 
                                                                            
     validates :ballast, presence: true, numericality: { greater_than: 0 }  
                                                                            
