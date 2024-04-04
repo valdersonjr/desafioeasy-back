@@ -82,7 +82,7 @@ RSpec.describe "Admin V1 OrderProducts as :admin", type: :request do
     let(:url) { "/admin/v1/loads/#{load.id}/orders/#{order.id}/order_products/#{order_product.id}" }
 
     context "with valid params" do
-      let(:new_quantity) { '3 caixas' }
+      let(:new_quantity) { 3 }
       let(:order_product_params) { { order_product: { quantity: new_quantity } }.to_json }
 
       it "updates the product in the order" do

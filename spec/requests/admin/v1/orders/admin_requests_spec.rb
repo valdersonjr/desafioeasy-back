@@ -274,7 +274,7 @@ RSpec.describe "Admin V1 Orders as :admin", type: :request do
 
     before do
       products.each do |product|
-        create(:order_product, order: order, product: product, quantity: "2 caixas", box: true)
+        create(:order_product, order: order, product: product, quantity: "2", box: true)
       end
 
       get "/admin/v1/loads/#{load.id}/orders/#{order.id}", headers: { "ACCEPT" => "application/json" }
