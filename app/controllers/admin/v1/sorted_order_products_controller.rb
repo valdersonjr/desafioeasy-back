@@ -18,7 +18,17 @@ module Admin::V1
       end
 
       def sort_order_products(order_products)
-        order_products.sort_by { |product| -product[:quantity] }
+        order_products.map do |order_product|
+          {
+            id: order_product.id,
+            quantity: order_product.quantity,
+            box: order_product.box,
+            order_id: order_product.order_id,
+            product_id: order_product.product_id,
+            ballast: order_product.product.ballast,
+            name: order_product.product.name
+          }
+        end.sort_by { |product| -product[:quantity] }
       end
     end
 end
