@@ -4,9 +4,10 @@ module Admin::V1
       before_action :set_order, only: [:index]
 
       def index
-        order_products = @order.order_products
+        order_products = @order.order_products.includes(:product)
         sorted_products = sort_order_products(order_products)
-        render json: sorted_products, status: :ok
+        layered_products = build_layers(sorted_products)
+        render json: layered_products, status: :ok
       end
 
       private
@@ -16,7 +17,7 @@ module Admin::V1
       rescue ActiveRecord::RecordNotFound
         render_error(message: "Lista não encontrada", status: :not_found)
       end
-
+#Transformação de cada order product em um hash para manipular mais facilmente os dados do pedido
       def sort_order_products(order_products)
         order_products.map do |order_product|
           {
@@ -28,7 +29,33 @@ module Admin::V1
             ballast: order_product.product.ballast,
             name: order_product.product.name
           }
+#Após a criação dos hashes a coleção é ordenada por quantity em ordem decrescente          
         end.sort_by { |product| -product[:quantity] }
       end
+#Método para montar as camadas
+      def build_layers(sorted_products)
+#Inicialização de duas listas vazias para armazenar produtos em caixas completas e os que terão sobras        
+        full_boxes = []
+        leftovers = []
+ #Iteração sobre cada produto ordenado   
+        sorted_products.each do |product|
+#Divmod usado para dividir a quantidade sobre o ballast, resultando o número de caixas completas (full_box_count) e a quantidade restante que sobrar (leftover_quantity)          
+          full_box_count, leftover_quantity = product[:quantity].divmod(product[:ballast])
+#Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true          
+          if full_box_count > 0
+            full_box_count.times do
+              full_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
+            end
+          end
+#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false          
+          if leftover_quantity > 0
+            leftovers << product.merge(quantity: leftover_quantity, is_full_box: false)
+          end
+        end
+#Chama o método allocate_layers com a união das listas full_boxes e leftovers, iniciando o processo de alocação em camadas     
+        layered_products = allocate_layers(full_boxes + leftovers)
+        layered_products
     end
+  end
+#Continuar com a criação de um novo metodo para separar os produtos em full_boxes e leftovers baseado no is_full_box
 end
