@@ -47,7 +47,7 @@ module Admin::V1
               full_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
             end
           end
-#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false          
+#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas         
           if leftover_quantity > 0
             leftovers << product.merge(quantity: leftover_quantity, is_full_box: false)
           end
@@ -56,6 +56,21 @@ module Admin::V1
         layered_products = allocate_layers(full_boxes + leftovers)
         layered_products
     end
-  end
-#Continuar com a criação de um novo metodo para separar os produtos em full_boxes e leftovers baseado no is_full_box
+#Método para separar os produtos em full_boxes e leftovers baseado no is_full_box
+      def allocate_layers(products)
+        layered_products = []
+        current_layer = 1
+        last_full_box_layer = nil
+#Aloca os full_boxes cada um em uma camada diferente
+        full_boxes, leftovers = products.partition { |p| p[:is_full_box] }
+
+        full_boxes.each do |product|
+          product[:layer] = current_layer
+          layered_products << product
+#Guarda a ultima camada que recebe de uma caixa completa          
+          last_full_box_layer = current_layer
+          current_layer += 1
+        end
+      end
+    end
 end

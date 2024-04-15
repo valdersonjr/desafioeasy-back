@@ -4,5 +4,5 @@ class OrderProduct < ApplicationRecord
   
     validates :quantity, presence: true, numericality: { greater_than: 0 }
     validates :box, inclusion: { in: [true, false] }
-    validates :product_id, uniqueness: { scope: :order_id }
+    validates :product_id, presence: true
   end
