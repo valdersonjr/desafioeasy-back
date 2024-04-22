@@ -30,32 +30,36 @@ module Admin::V1
             name: order_product.product.name
           }
 #Após a criação dos hashes a coleção é ordenada por quantity em ordem decrescente          
-        end.sort_by { |product| -product[:quantity] }
+      end.sort_by { |product| [product[:box] ? 0 : 1, -product[:quantity]] }
       end
 #Método para montar as camadas
       def build_layers(sorted_products)
-#Inicialização de duas listas vazias para armazenar produtos em caixas completas e os que terão sobras        
-        full_boxes = []
-        leftovers = []
- #Iteração sobre cada produto ordenado   
-        sorted_products.each do |product|
-#Divmod usado para dividir a quantidade sobre o ballast, resultando o número de caixas completas (full_box_count) e a quantidade restante que sobrar (leftover_quantity)          
-          full_box_count, leftover_quantity = product[:quantity].divmod(product[:ballast])
-#Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true          
-          if full_box_count > 0
-            full_box_count.times do
-              full_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
-            end
-          end
-#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas         
-          if leftover_quantity > 0
-            leftovers << product.merge(quantity: leftover_quantity, is_full_box: false)
-          end
-        end
-#Chama o método allocate_layers com a união das listas full_boxes e leftovers, iniciando o processo de alocação em camadas     
-        layered_products = allocate_layers(full_boxes + leftovers)
-        layered_products
+#Inicialização de duas listas vazias para armazenar produtos em caixas completas e os que terão sobras  
+      full_boxes = []
+      leftovers = []
+#Iteração sobre cada produto ordenado  
+      sorted_products.each do |product|
+#Divmod usado para dividir a quantidade sobre o ballast, resultando o número de caixas completas (full_box_count) e a quantidade restante que sobrar (leftover_quantity)    
+      full_box_count, leftover_quantity = product[:quantity].divmod(product[:ballast])
+#Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true     
+      if product[:box]
+        full_box_count.times do
+          ull_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
+      end
+#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas      
+      if leftover_quantity > 0
+        leftovers << product.merge(quantity: leftover_quantity, is_full_box: false)
+      end
+    else
+#Se não for uma caixa, a quantidade inteira fica marcada como leftover
+      leftovers << product.merge(quantity: product[:quantity], is_full_box: false)
     end
+  end
+#Combina e ordena a lista final antes da alocação por camadas para manter box true antes de false na exibição da lista
+        final_products = (full_boxes + leftovers).sort_by { |p| [p[:box] ? 0 : 1, -p[:quantity]] }
+        layered_products = allocate_layers(final_products)
+        layered_products
+      end
 #Método para separar os produtos em full_boxes e leftovers baseado no is_full_box
       def allocate_layers(products)
         layered_products = []
@@ -67,15 +71,15 @@ module Admin::V1
         full_boxes.each do |product|
           product[:layer] = current_layer
           layered_products << product
-#Guarda a ultima camada que recebe de uma caixa completa          
           last_full_box_layer = current_layer
           current_layer += 1
         end
 #Tratamento da camada restante, organiza as sobras na mesma camada        
         unless leftovers.empty?
-          current_layer = last_full_box_layer + 1 if last_full_box_layer
+          if last_full_box_layer
+            current_layer = last_full_box_layer + 1
+          end
           leftovers.each do |product|
-            existing_product_in_layer = layered_products.find { |p| p[:layer] == current_layer && p[:product_id] == product[:product_id] }
             product[:layer] = current_layer
             layered_products << product
           end
