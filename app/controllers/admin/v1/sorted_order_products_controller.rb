@@ -71,6 +71,16 @@ module Admin::V1
           last_full_box_layer = current_layer
           current_layer += 1
         end
+#Tratamento da camada restante, organiza as sobras na mesma camada        
+        unless leftovers.empty?
+          current_layer = last_full_box_layer + 1 if last_full_box_layer
+          leftovers.each do |product|
+            existing_product_in_layer = layered_products.find { |p| p[:layer] == current_layer && p[:product_id] == product[:product_id] }
+            product[:layer] = current_layer
+            layered_products << product
+          end
+        end
+        layered_products
       end
     end
 end
