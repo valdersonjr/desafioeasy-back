@@ -7,6 +7,7 @@ module Admin::V1
         order_products = @order.order_products.includes(:product)
         sorted_products = sort_order_products(order_products)
         layered_products = build_layers(sorted_products)
+        save_sorted_products(layered_products)
         render json: layered_products, status: :ok
       end
 
@@ -44,7 +45,7 @@ module Admin::V1
 #Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true     
       if product[:box]
         full_box_count.times do
-          ull_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
+        full_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
       end
 #Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas      
       if leftover_quantity > 0
@@ -86,5 +87,18 @@ module Admin::V1
         end
         layered_products
       end
+      def save_sorted_products(sorted_products)
+        sorted_products.each do |product_data|
+          sorted_product = SortedOrderProduct.find_or_initialize_by(product_id: product_data[:product_id], order_id: product_data[:order_id])
+          sorted_product.assign_attributes(
+            quantity: product_data[:quantity],
+            box: product_data[:box],
+            layer: product_data[:layer],
+          )
+          sorted_product.save!
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        logger.error("Erro ao carregar a lista de sorted order products: #{e.message}")
+      end
     end
-end
+  end
