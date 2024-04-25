@@ -17,9 +17,12 @@ Rails.application.routes.draw do
       resources :loads, only: [:index, :show, :create, :update, :destroy] do
         resources :orders, only: [:index, :show, :create, :update, :destroy] do
           resources :order_products, only: [:index, :create, :show, :update, :destroy]
-          resources :sorted_order_products, only: [:index]
+          resources :sorted_order_products, only: [:index]do
+          get :show_sorted_products, on: :collection
+          end
         end
       end
+      post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
     end
   end
 end
