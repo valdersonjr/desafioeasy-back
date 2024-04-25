@@ -12,6 +12,11 @@ module Admin::V1
       @loading_service.call
     end
 
+    def count
+      user_count = User.count
+      render json: { count: user_count }
+    end
+
     def create                                                                        
       @user = User.new
       @user.attributes = user_params

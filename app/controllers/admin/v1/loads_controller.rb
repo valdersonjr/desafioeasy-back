@@ -11,6 +11,11 @@ module Admin::V1
       @loading_service.call
     end
     
+    def count
+      load_count = Load.count
+      render json: { count: load_count }
+    end
+
     def create                                                                         
       @load = Load.new
       @load.attributes = load_params

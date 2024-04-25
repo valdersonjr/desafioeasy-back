@@ -12,6 +12,11 @@ module Admin::V1
       @loading_service.call
     end
 
+    def count
+      product_count = Product.count
+      render json: { count: product_count }
+    end
+
     def create                                                                         
       @product = Product.new
       @product.attributes = product_params

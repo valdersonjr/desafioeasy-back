@@ -1,27 +1,42 @@
 Rails.application.routes.draw do
-  devise_for :users, path: '', path_names: { # Rotas para login e criação de conta usando o devise.
+  devise_for :users, path: '', path_names: { 
     sign_in: 'login',
     sign_out: 'logout',
     registration: 'signup'
-  },
-  controllers: {
+  }, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations'
   }
+  
   namespace :admin, defaults: { format: :json } do
     namespace :v1 do
-      get "home" => "home#index"
+      get "home", to: "home#index"
       get 'users/current', to: 'users#current'
-      resources :users, only: [:index, :show, :create, :update, :destroy]
-      resources :products, only: [:index, :show, :create, :update, :destroy]
+      
+      resources :users, only: [:index, :show, :create, :update, :destroy] do
+        collection do
+          get 'count'
+        end
+      end
+      
+      resources :products, only: [:index, :show, :create, :update, :destroy] do
+        collection do
+          get 'count'
+        end
+      end
+
       resources :loads, only: [:index, :show, :create, :update, :destroy] do
+        collection do
+          get 'count'
+        end
         resources :orders, only: [:index, :show, :create, :update, :destroy] do
           resources :order_products, only: [:index, :create, :show, :update, :destroy]
-          resources :sorted_order_products, only: [:index]do
-          get :show_sorted_products, on: :collection
+          resources :sorted_order_products, only: [:index] do
+            get :show_sorted_products, on: :collection
           end
         end
       end
+      
       post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
     end
   end
