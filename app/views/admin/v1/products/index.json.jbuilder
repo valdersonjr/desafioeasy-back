@@ -1,7 +1,7 @@
 # View de resposta em formato JSON.
 
 json.products do
-  json.array! @loading_service.records, :id, :name, :ballast, :product_type
+  json.array! @loading_service.records, :id, :name, :ballast
 end
 
 json.meta do

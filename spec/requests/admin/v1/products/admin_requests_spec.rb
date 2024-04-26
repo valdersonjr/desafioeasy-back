@@ -21,7 +21,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       end
       it "returns 10 first Products" do
         get url, headers: auth_header(user)
-        expected_products = products[0..9].as_json(only: %i(id name ballast product_type))
+        expected_products = products[0..9].as_json(only: %i(id name ballast))
         expect(body_json['products']).to contain_exactly *expected_products
       end
 
@@ -47,7 +47,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       it "returns only seached products limited by default pagination" do
         get url, headers: auth_header(user), params: search_params
         expected_products = search_name_products[0..9].map do |product|
-          product.as_json(only: %i(ballast id name product_type))
+          product.as_json(only: %i(ballast id name))
         end
         expect(body_json['products']).to contain_exactly *expected_products
       end
@@ -75,7 +75,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       
       it "returns products limited by pagination" do
         get url, headers: auth_header(user), params: pagination_params
-        expected_products = products[5..9].as_json(only: %i(ballast id name product_type))
+        expected_products = products[5..9].as_json(only: %i(ballast id name))
         expect(body_json['products']).to contain_exactly *expected_products
       end
 
@@ -95,7 +95,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       it "returns ordered products limited by default pagination" do
         get url, headers: auth_header(user), params: order_params
         products.sort! { |a, b| b[:name] <=> a[:name]}
-        expected_products = products[0..9].as_json(only: %i(id name ballast product_type))
+        expected_products = products[0..9].as_json(only: %i(id name ballast))
         expect(body_json['products']).to contain_exactly *expected_products
       end
  
@@ -124,7 +124,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 
       it 'returns last added Product' do
         post url, headers: auth_header(user), params: product_params
-        expected_product = Product.last.as_json(only: %i(ballast id name product_type))
+        expected_product = Product.last.as_json(only: %i(ballast id name))
         expect(body_json['product']).to eq expected_product
       end
 
@@ -167,7 +167,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 
     it "returns requested Product" do
       get url, headers: auth_header(user)
-      expected_product = product.as_json(only: %i(ballast id name product_type))
+      expected_product = product.as_json(only: %i(ballast id name))
       expect(body_json['product']).to eq expected_product
     end
 
@@ -194,7 +194,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       it 'returns updated Product' do
         patch url, headers: auth_header(user), params: product_params
         product.reload
-        expected_product = product.as_json(only: %i(id name ballast product_type))
+        expected_product = product.as_json(only: %i(id name ballast))
         expect(body_json['product']).to eq expected_product
       end
 

@@ -10,9 +10,7 @@ class Product < ApplicationRecord
     include LikeSearchable                                                 
     include Paginatable                                                    
 
-    validates :name, presence: true
-                                                                           
-    validates :product_type, presence: true 
+    validates :name, presence: true                                                                    
                                                                            
     validates :ballast, presence: true, numericality: { greater_than: 0 }  
                                                                            

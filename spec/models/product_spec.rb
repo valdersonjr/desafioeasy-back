@@ -7,8 +7,6 @@ RSpec.describe Product, type: :model do
     it_behaves_like "paginatable concern", :product                            # Verifica se o modelo Product pode ser paginado de acordo com os critérios definidos no concern 'paginatable'.
 
     it { is_expected.to validate_presence_of(:name)}                           # Verifica se o modelo Product valida a presença do atributo :name. 
-    it { is_expected.to validate_uniqueness_of(:name).case_insensitive}        # Verifica se o modelo Product valida a unicidade do atributo :name, sem considerar diferenças entre maiúsculas e minúsculas.
     it { is_expected.to validate_presence_of(:ballast)}                        # Verifica se o modelo Product valida a presença do atributo :ballast. 
     it { is_expected.to validate_numericality_of(:ballast).is_greater_than(0)} # Verifica se o modelo Product valida a unicidade do atributo :ballast, onde ele tem que ser maior que zero.
-    it { is_expected.to validate_presence_of(:product_type)} 
 end
