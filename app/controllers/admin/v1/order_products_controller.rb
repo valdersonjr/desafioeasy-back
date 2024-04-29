@@ -1,7 +1,7 @@
 module Admin::V1
     class OrderProductsController < ApiController
       before_action :authenticate_user!
-      before_action :set_order, only: [:index, :create]
+      before_action :set_order, only: [:index, :create, :update, :destroy]
       before_action :load_order_product, only: [:show, :update, :destroy]
   
       def index
@@ -11,17 +11,28 @@ module Admin::V1
   
       def create
         @order_product = @order.order_products.new(order_product_params)
-        save_order_product!
+        if @order_product.save
+          clear_sorted_order_products(@order)
+          save_order_product!
+        else
+          render_error(fields: {base: ["No changes detected."]})
+        end
       end
   
       def show; end
   
       def update
         @order_product.attributes = order_product_params
-        save_order_product!
+        if @order_product.changed?
+          clear_sorted_order_products(@order)
+          save_order_product!
+        else
+          render_error(fields: {base: ["No changes detected."]})
+        end
       end
   
       def destroy
+        clear_sorted_order_products(@order)
         @order_product.destroy!
         head :no_content
       rescue
@@ -50,6 +61,9 @@ module Admin::V1
         render :show, status: :ok
       rescue StandardError => e
         render_error(fields: @order_product.errors.messages.merge(base: [e.message]))
+      end
+      def clear_sorted_order_products(order)
+        SortedOrderProduct.where(order_id: order.id).delete_all
       end
     end
   end

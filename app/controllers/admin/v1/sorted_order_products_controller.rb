@@ -4,7 +4,7 @@ module Admin::V1
     before_action :set_order, only: [:index, :show_sorted_products]
 
     def index
-      order_products = @order.order_products.includes(:product)
+      order_products = @order.order_products
       sorted_products = sort_order_products(order_products)
       layered_products = build_layers(sorted_products)
       save_sorted_products(layered_products)
@@ -12,7 +12,7 @@ module Admin::V1
     end
 #Método para visualização dos produtos ordenados
     def show_sorted_products
-      sorted_order_products = SortedOrderProduct.where(order_id: params[:order_id]).includes(:product)
+      sorted_order_products = SortedOrderProduct.where(order_id: params[:order_id])
       render json: sorted_order_products.as_json(include: {
         product: {
           only: [:name, :ballast]
@@ -21,16 +21,23 @@ module Admin::V1
     end
 
     def sort_all
-#Exclui os registros antes da ordenação      
-      clear_sorted_products
-#Ordenação de todas as sorted order products      
-      Order.find_each do |order|
-        order_products = order.order_products.includes(:product)
-        sorted_products = sort_order_products(order_products)
-        layered_products = build_layers(sorted_products)
-        save_sorted_products(layered_products)
-
+      threads = []
+    
+      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
+        threads << Thread.new do
+          ActiveRecord::Base.connection_pool.with_connection do
+            order_products = order.order_products
+            sorted_products = sort_order_products(order_products)
+            layered_products = build_layers(sorted_products)
+            save_sorted_products(layered_products)
+          end
+        end
+        if threads.size >= 2
+          threads.each(&:join)
+          threads = []
+        end
       end
+      threads.each(&:join)
     end
 
     private
@@ -114,25 +121,25 @@ end
       layered_products
     end
 #Método para salvar os produtos ordenados    
-    def save_sorted_products(sorted_products)
-#Inicia uma transação no banco de dados      
-      ActiveRecord::Base.transaction do
-#Itera sobre cada produto no array de produtos ordenados        
-        sorted_products.each do |product_data|
-#Busca ou inicializa um registro de SortedOrderProduct com os critérios específicos          
-          sorted_product = SortedOrderProduct.find_or_initialize_by(
-            product_id: product_data[:product_id],
-            order_id: product_data[:order_id],
-            layer: product_data[:layer],
-            quantity: product_data[:quantity],
-            box: product_data[:box]
-          )
-#Salva o registro no banco de dados levantando uma exceção se falhar          
-          sorted_product.save!
+def save_sorted_products(sorted_products)
+  #Inicia uma transação no banco de dados      
+        ActiveRecord::Base.transaction do
+  #Itera sobre cada produto no array de produtos ordenados        
+          sorted_products.each do |product_data|
+  #Busca ou inicializa um registro de SortedOrderProduct com os critérios específicos          
+            sorted_product = SortedOrderProduct.find_or_initialize_by(
+              product_id: product_data[:product_id],
+              order_id: product_data[:order_id],
+              layer: product_data[:layer],
+              quantity: product_data[:quantity],
+              box: product_data[:box]
+            )
+  #Salva o registro no banco de dados levantando uma exceção se falhar          
+            sorted_product.save!
+          end
+        rescue ActiveRecord::RecordInvalid => e
+          logger.error("Erro ao carregar a lista de sorted order products: #{e.message}")
         end
-      rescue ActiveRecord::RecordInvalid => e
-        logger.error("Erro ao carregar a lista de sorted order products: #{e.message}")
       end
     end
   end
-end
