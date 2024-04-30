@@ -20,32 +20,49 @@ module Admin::V1
       }, only: [:quantity, :box, :layer]), status: :ok
     end
 
-    def sort_all
-      threads = []
-    
-      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
-        threads << Thread.new do
-          ActiveRecord::Base.connection_pool.with_connection do
-            order_products = order.order_products
-            sorted_products = sort_order_products(order_products)
-            layered_products = build_layers(sorted_products)
-            save_sorted_products(layered_products)
-          end
-        end
-        if threads.size >= 2
-          threads.each(&:join)
-          threads = []
+    def sort_all_products
+      load_id = params[:load_id]
+      if load_id.blank?
+        return render json: { status: 'error', message: 'Load ID não existe.' }, status: :bad_request
+      end
+      
+      load = Load.find_by(id: load_id)
+      if load.nil?
+        return render json: { status: 'error', message: 'Load não encontrada.' }, status: :not_found
+      end
+      
+      load.orders.each do |order|
+        ActiveRecord::Base.connection_pool.with_connection do
+          order_products = order.order_products
+          sorted_products = sort_order_products(order_products)
+          layered_products = build_layers(sorted_products)
+          save_sorted_products(layered_products)
         end
       end
-      threads.each(&:join)
+      
+      render json: { status: 'success', message: 'All orders have been sorted successfully.' }, status: :ok
     end
-
+#    def sort_all
+#      threads = []
+    
+#      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
+#        threads << Thread.new do
+#          ActiveRecord::Base.connection_pool.with_connection do
+#            order_products = order.order_products
+#            sorted_products = sort_order_products(order_products)
+#            layered_products = build_layers(sorted_products)
+#            save_sorted_products(layered_products)
+#          end
+#        end
+#        if threads.size >= 2
+#          threads.each(&:join)
+#          threads = []
+#        end
+#      end
+#      threads.each(&:join)
+#    end
     private
 #Método para excluir os registros antes de ordenar
-    def clear_sorted_products
-      SortedOrderProduct.delete_all
-    end
-
     def set_order
       @order = Order.find(params[:order_id])
     rescue ActiveRecord::RecordNotFound

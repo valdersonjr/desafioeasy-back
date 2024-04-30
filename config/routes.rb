@@ -36,8 +36,8 @@ Rails.application.routes.draw do
           end
         end
       end
-      
-      post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
+      #post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
+      post 'sorted_order_products/sort_all_products', to: 'sorted_order_products#sort_all_products'
     end
   end
 end
