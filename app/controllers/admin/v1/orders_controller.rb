@@ -12,6 +12,11 @@ module Admin::V1
       @loading_service = Admin::ModelLoadingService.new(orders_query, searchable_params)
       @loading_service.call
     end
+
+    def count
+      order_count = Order.count
+      render json: { count: order_count }
+    end
     
     def create
       @order = Order.new

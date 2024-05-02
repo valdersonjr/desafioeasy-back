@@ -30,13 +30,19 @@ Rails.application.routes.draw do
           get 'count'
         end
         resources :orders, only: [:index, :show, :create, :update, :destroy] do
+          collection do
+            get 'count'
+          end
           resources :order_products, only: [:index, :create, :show, :update, :destroy]
           resources :sorted_order_products, only: [:index] do
+            collection do
+              get 'count'
+            end
             get :show_sorted_products, on: :collection
           end
         end
       end
-      #post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
+      post 'sorted_order_products/sort_all', to: 'sorted_order_products#sort_all'
       post 'sorted_order_products/sort_all_products', to: 'sorted_order_products#sort_all_products'
     end
   end

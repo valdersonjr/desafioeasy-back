@@ -10,6 +10,11 @@ module Admin::V1
       save_sorted_products(layered_products)
       render json: layered_products, status: :ok
     end
+    
+    def count
+      sorted_order_product_count = SortedOrderProduct.count
+      render json: { count: sorted_order_product_count }
+    end
 #Método para visualização dos produtos ordenados
     def show_sorted_products
       sorted_order_products = SortedOrderProduct.where(order_id: params[:order_id])
@@ -42,25 +47,27 @@ module Admin::V1
       
       render json: { status: 'success', message: 'All orders have been sorted successfully.' }, status: :ok
     end
-#    def sort_all
-#      threads = []
     
-#      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
-#        threads << Thread.new do
-#          ActiveRecord::Base.connection_pool.with_connection do
-#            order_products = order.order_products
-#            sorted_products = sort_order_products(order_products)
-#            layered_products = build_layers(sorted_products)
-#            save_sorted_products(layered_products)
-#          end
-#        end
-#        if threads.size >= 2
-#          threads.each(&:join)
-#          threads = []
-#        end
-#      end
-#      threads.each(&:join)
-#    end
+    def sort_all
+      threads = []
+    
+      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
+        threads << Thread.new do
+          ActiveRecord::Base.connection_pool.with_connection do
+            order_products = order.order_products
+            sorted_products = sort_order_products(order_products)
+            layered_products = build_layers(sorted_products)
+            save_sorted_products(layered_products)
+          end
+        end
+        if threads.size >= 2
+          threads.each(&:join)
+          threads = []
+        end
+      end
+      threads.each(&:join)
+    end
+
     private
 #Método para excluir os registros antes de ordenar
     def set_order
