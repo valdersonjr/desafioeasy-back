@@ -17,6 +17,10 @@ gem 'devise-jwt'
 
 gem 'jsonapi-serializer'
 
+gem 'redis'
+
+gem 'sidekiq'
+
 gem "jbuilder"
 
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]

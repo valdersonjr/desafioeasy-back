@@ -27,7 +27,7 @@ module DesafioeasyBack
     config.active_record.default_timezone = :utc
     config.i18n.load_path += Dir[Rails.root.join('config/locales/**/*.{rb,yml}')]
     config.i18n.default_locale = :'pt-BR'
-
+    config.active_job.queue_adapter = :async
     config.api_only = true
     config.log_level = :warn
   end

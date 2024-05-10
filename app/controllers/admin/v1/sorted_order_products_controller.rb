@@ -30,46 +30,18 @@ module Admin::V1
       if load_id.blank?
         return render json: { status: 'error', message: 'Load ID não existe.' }, status: :bad_request
       end
-      
-      load = Load.find_by(id: load_id)
-      if load.nil?
-        return render json: { status: 'error', message: 'Load não encontrada.' }, status: :not_found
-      end
-      
-      load.orders.each do |order|
-        ActiveRecord::Base.connection_pool.with_connection do
-          order_products = order.order_products
-          sorted_products = sort_order_products(order_products)
-          layered_products = build_layers(sorted_products)
-          save_sorted_products(layered_products)
-        end
-      end
-      
-      render json: { status: 'success', message: 'All orders have been sorted successfully.' }, status: :ok
+    
+      SortAllOrderProductsJob.perform_later(load_id)
+      render json: { status: 'success', message: 'Ordenação de todos os pedidos enfileirada.' }, status: :ok
     end
     
     def sort_all
-      threads = []
-    
-      Order.includes(order_products: :product).find_each(batch_size: 200) do |order|
-        threads << Thread.new do
-          ActiveRecord::Base.connection_pool.with_connection do
-            order_products = order.order_products
-            sorted_products = sort_order_products(order_products)
-            layered_products = build_layers(sorted_products)
-            save_sorted_products(layered_products)
-          end
-        end
-        if threads.size >= 2
-          threads.each(&:join)
-          threads = []
-        end
-      end
-      threads.each(&:join)
+        SortOrderProductsJob.perform_later
+      render json: { status: 'success', message: 'Ordenação de todos os pedidos enfileirada.' }, status: :ok
     end
-
+    
     private
-#Método para excluir os registros antes de ordenar
+
     def set_order
       @order = Order.find(params[:order_id])
     rescue ActiveRecord::RecordNotFound
@@ -146,24 +118,24 @@ end
     end
 #Método para salvar os produtos ordenados    
 def save_sorted_products(sorted_products)
-  #Inicia uma transação no banco de dados      
-        ActiveRecord::Base.transaction do
-  #Itera sobre cada produto no array de produtos ordenados        
-          sorted_products.each do |product_data|
-  #Busca ou inicializa um registro de SortedOrderProduct com os critérios específicos          
-            sorted_product = SortedOrderProduct.find_or_initialize_by(
-              product_id: product_data[:product_id],
-              order_id: product_data[:order_id],
-              layer: product_data[:layer],
-              quantity: product_data[:quantity],
-              box: product_data[:box]
-            )
-  #Salva o registro no banco de dados levantando uma exceção se falhar          
-            sorted_product.save!
-          end
-        rescue ActiveRecord::RecordInvalid => e
-          logger.error("Erro ao carregar a lista de sorted order products: #{e.message}")
+#Inicia uma transação no banco de dados      
+      ActiveRecord::Base.transaction do
+#Itera sobre cada produto no array de produtos ordenados        
+        sorted_products.each do |product_data|
+#Busca ou inicializa um registro de SortedOrderProduct com os critérios específicos          
+          sorted_product = SortedOrderProduct.find_or_initialize_by(
+            product_id: product_data[:product_id],
+            order_id: product_data[:order_id],
+            layer: product_data[:layer],
+            quantity: product_data[:quantity],
+            box: product_data[:box]
+          )
+#Salva o registro no banco de dados levantando uma exceção se falhar          
+          sorted_product.save!
         end
+      rescue ActiveRecord::RecordInvalid => e
+        logger.error("Erro ao carregar a lista de sorted order products: #{e.message}")
       end
     end
   end
+end
