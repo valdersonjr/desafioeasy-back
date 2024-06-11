@@ -30,28 +30,28 @@ class SortOrderProductsJob < ApplicationJob
   end
 
   def build_layers(sorted_products)
-    #Inicialização de duas listas vazias para armazenar produtos em caixas completas e os que terão sobras  
+#Inicialização de duas listas vazias para armazenar produtos em caixas completas e os que terão sobras  
         full_boxes = []
         leftovers = []
-    #Iteração sobre cada produto ordenado  
+#Iteração sobre cada produto ordenado  
         sorted_products.each do |product|
-    #Divmod usado para dividir a quantidade sobre o ballast, resultando o número de caixas completas (full_box_count) e a quantidade restante que sobrar (leftover_quantity)    
+#Divmod usado para dividir a quantidade sobre o ballast, resultando o número de caixas completas (full_box_count) e a quantidade restante que sobrar (leftover_quantity)    
         full_box_count, leftover_quantity = product[:quantity].divmod(product[:ballast])
-    #Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true     
+#Se tiver caixas completas, elas são adicionadas a lista full_boxes e são marcadas como is_full_box: true     
         if product[:box]
           full_box_count.times do
           full_boxes << product.merge(quantity: product[:ballast], is_full_box: true)
         end
-    #Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas      
+#Se tiver quantidade restante que não preencheu uma caixa, ela é adicionada a lista leftovers como um produto separado e marcado como is_full_box: false para alocar no final das camadas      
         if leftover_quantity > 0
           leftovers << product.merge(quantity: leftover_quantity, is_full_box: false)
         end
       else
-    #Se não for uma caixa, a quantidade inteira fica marcada como leftover
+#Se não for uma caixa, a quantidade inteira fica marcada como leftover
         leftovers << product.merge(quantity: product[:quantity], is_full_box: false)
       end
     end
-    #Combina e ordena a lista final antes da alocação por camadas para manter box true antes de false na exibição da lista
+#Combina e ordena a lista final antes da alocação por camadas para manter box true antes de false na exibição da lista
           final_products = (full_boxes + leftovers).sort_by { |p| [p[:box] ? 0 : 1, -p[:quantity]] }
           layered_products = allocate_layers(final_products)
           layered_products
