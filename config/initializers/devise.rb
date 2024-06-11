@@ -1,5 +1,12 @@
 Devise.setup do |config|
+
+  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
+
   require 'devise/orm/active_record'
+
+  config.case_insensitive_keys = [:email]
+
+  config.strip_whitespace_keys = [:email]
 
   config.skip_session_storage = [:http_auth]
 
@@ -11,7 +18,12 @@ Devise.setup do |config|
 
   config.password_length = 6..128
 
+  config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
+
   config.reset_password_within = 6.hours
+
+
+  config.navigational_formats = []
 
   config.sign_out_via = :delete
 
@@ -19,13 +31,14 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
 
   config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.devise_jwt_secret_key!
+    jwt.secret = Rails.application.credentials.fetch(:devise_jwt_secret_key)
     jwt.dispatch_requests = [
-      ['POST', %r{^/login$}]
+      ['POST', %r{^/user/sign_in$}]
     ]
     jwt.revocation_requests = [
-      ['DELETE', %r{^/logout$}]
+      ['DELETE', %r{^/user/sign_out$}]
     ]
-    jwt.expiration_time = 1.week.to_i
+
+    jwt.expiration_time = 1.year.to_i
   end
 end
