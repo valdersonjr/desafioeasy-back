@@ -21,6 +21,10 @@ gem 'sidekiq'
 
 gem "jbuilder"
 
+gem 'ruby-prof'
+
+gem 'faker'
+
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 
 
@@ -34,9 +38,6 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'shoulda-matchers'
   gem 'factory_bot_rails'
-  gem 'faker'
-  gem 'ruby-prof'
-  
 end
 
 group :development do
