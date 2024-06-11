@@ -9,8 +9,8 @@ services:
     name: minieasyhygor-backend
     runtime: ruby
     plan: free
-    buildCommand: bundle install && bundle exec rake db:migrate
-    startCommand: bundle exec puma -C config/puma.rb
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec rails server"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
