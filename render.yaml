@@ -6,12 +6,11 @@ databases:
 
 services:
   - type: web
-    name: minieasyhygor
+    name: minieasyhygor-backend
     runtime: ruby
     plan: free
-    buildCommand: "./bin/render-build.sh"
-    # preDeployCommand: "bundle exec rails db:migrate" # preDeployCommand only available on paid instance types
-    startCommand: "bundle exec rails server"
+    buildCommand: "bundle install && bundle exec rake db:migrate"
+    startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -20,4 +19,11 @@ services:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: WEB_CONCURRENCY
-        value: 2 # sensible default
+        value: "2"
+
+  - type: web
+    name: minieasyhygor-frontend
+    runtime: node
+    plan: free
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run serve"
