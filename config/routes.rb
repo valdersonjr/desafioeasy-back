@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   }, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations'
-  }
+  },  skip: [:registrations, :confirmations, :passwords]
   
   namespace :admin, defaults: { format: :json } do
     namespace :v1 do
