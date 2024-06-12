@@ -17,6 +17,7 @@ gem 'redis'
 gem 'redis-client'
 gem "faker"
 gem 'jsonapi-serializer'
+gem 'actionmailer'
 
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
