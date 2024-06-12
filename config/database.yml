@@ -24,5 +24,5 @@ production:
   database: easy_desafio
   username: easy_desafio_user
   password: <%= ENV["EASY_DESAFIO_BACKEND_DATABASE_PASSWORD"] %>
-  host: dpg-cpk3utqcn0vc73b0501g-a
+  host: dpg-cpkqvlud3nmc73b2m1r0-a
   port: 5432

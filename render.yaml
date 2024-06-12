@@ -1,12 +1,12 @@
 databases:
-  - name: easy_desafio
-    databaseName: easy_desafio
-    user: easy_desafio_user
+  - name: easy_db
+    databaseName: easy_db
+    user: easy_db_user
     plan: free
 
 services:
   - type: web
-    name: easy_desafio_backend
+    name: easy_db_backend
     runtime: ruby
     plan: free
     buildCommand: "./bin/render-build.sh"
@@ -15,7 +15,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: easy_desafio
+          name: easy_db
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
