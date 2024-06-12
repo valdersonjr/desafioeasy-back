@@ -36,7 +36,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def respond_to_on_destroy                                                                                       # Método personalizado para lidar com o logout.
     if request.headers['Authorization'].present?                                                                  # Verifica se existe um token JWT no cabeçalho Authorization.
-      jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.devise_jwt_secret_key!).first # Decodifica o token para extrair o payload.
+      jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.secret_key_base!).first # Decodifica o token para extrair o payload.
       Rails.logger.debug("JWT Token in Authorization Header: #{jwt_payload}")
       current_user = User.find(jwt_payload['sub'])                                                                # Encontra o usuário baseado no sub claim do token (user id).
     end

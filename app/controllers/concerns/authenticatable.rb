@@ -22,7 +22,7 @@ module Authenticatable
 
   def valid_token?(token)
     begin
-      decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key!, true, algorithm: 'HS256')  # Decodifica o token JWT usando a chave secreta configurada e especificando o algoritmo HS256.
+      decoded_token = JWT.decode(token, Rails.application.credentials.secret_key_base!, true, algorithm: 'HS256')  # Decodifica o token JWT usando a chave secreta configurada e especificando o algoritmo HS256.
       Rails.logger.debug("Decoded Token: #{decoded_token}")
 
       user_id = decoded_token&.first&.fetch('user_id', nil)                                                              # Extrai o user_id do payload do token decodificado. Usado para encontrar o usuário correspondente.
