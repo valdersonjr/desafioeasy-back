@@ -14,17 +14,6 @@ pt-BR:
       timeout: "Sua sessão expirou, por favor, efetue login novamente para continuar."
       unauthenticated: "Para continuar, efetue login ou registre-se."
       unconfirmed: "Antes de continuar, confirme a sua conta."
-    mailer:
-      confirmation_instructions:
-        subject: "Instruções de confirmação"
-      reset_password_instructions:
-        subject: "Instruções de troca de senha"
-      unlock_instructions:
-        subject: "Instruções de desbloqueio"
-      email_changed:
-        subject: "E-mail alterado"
-      password_change:
-        subject: "Senha alterada"
     omniauth_callbacks:
       failure: "Não foi possível autenticá-lo como %{kind} porque %{reason}."
       success: "Autenticado com sucesso com uma conta de %{kind}."
