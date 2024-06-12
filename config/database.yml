@@ -6,19 +6,23 @@ default: &default
 development:
   <<: *default
   database: desafioeasy_back_development
-  username: hygor1
-  password: 481593
+  username: valdersonjr
+  password: sorvete123
   host: localhost
   port: 5432
 
 test:
   <<: *default
   database: desafioeasy_back_test
-  username: hygor1
-  password: 481593
+  username: valdersonjr
+  password: sorvete123
   host: localhost
   port: 5432
 
 production:
   <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  database: easy_desafio
+  username: easy_desafio_user
+  password: <%= ENV["EASY_DESAFIO_BACKEND_DATABASE_PASSWORD"] %>
+  host: dpg-cpk3utqcn0vc73b0501g-a
+  port: 5432
